@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Assistente para escolher o botão e a configuração ideais por zona de chute no futebol de botão." />
+  <meta name="theme-color" content="#0e2a47" />
+  <title>Assistente de Futebol de Botão</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Assistente de Futebol de Botão</h1>
+      <p>Ângulo × altura × distância × tipo de chute</p>
+    </div>
+    <span class="badge" id="model-badge">Modelo</span>
+  </header>
+
+  <div class="app-shell">
+    <nav class="sidebar" aria-label="Seções">
+      <a href="#/dashboard" data-view="dashboard" class="nav-btn">Visão geral</a>
+      <a href="#/perfil" data-view="perfil" class="nav-btn">Perfil do jogador</a>
+      <a href="#/botoes" data-view="botoes" class="nav-btn">Meus botões</a>
+      <a href="#/comparador" data-view="comparador" class="nav-btn">Comparador</a>
+      <a href="#/mapa" data-view="mapa" class="nav-btn">Mapa de utilização</a>
+      <a href="#/configurador" data-view="configurador" class="nav-btn">Configurador de chute</a>
+      <a href="#/testes" data-view="testes" class="nav-btn">Testes reais</a>
+      <a href="#/eficiencia" data-view="eficiencia" class="nav-btn">Score real</a>
+      <a href="#/dados" data-view="dados" class="nav-btn">Backup dos dados</a>
+    </nav>
+
+    <main class="content">
+      <section id="dashboard" class="view">
+        <div class="hero">
+          <div>
+            <span class="eyebrow">Modelo atual</span>
+            <h2 id="hero-title">3 zonas</h2>
+            <p>O índice de elevação (IE) descreve só o botão. A distância define o IE-alvo de cada tipo de chute. Compare seus botões, visualize o mapa e registre testes reais para confrontar teoria e prática.</p>
+          </div>
+          <div class="hero-stats" id="hero-stats"></div>
+        </div>
+
+        <article class="card field-reference-card">
+          <h3>Mapa real das zonas de chute</h3>
+          <p class="muted">As faixas são destacadas conforme a configuração ou zona analisada.</p>
+          <div class="real-field-visual" data-field-map="dashboard" data-alt="Campo de futebol de botão com linhas azul, laranja, amarela e vermelha delimitando as zonas de chute"></div>
+          <div id="dashboard-field-legend" class="field-status" aria-live="polite">Informe ângulo e altura para destacar a melhor zona.</div>
+        </article>
+
+        <div class="grid-3" id="zone-cards"></div>
+
+        <article class="card">
+          <h3>Avaliação rápida</h3>
+          <form id="quick-eval-form" class="form-grid">
+            <label>Ângulo (°)
+              <input type="number" id="quick-angle" data-angle-input value="23" required />
+            </label>
+            <label>Altura (mm)
+              <input type="number" id="quick-height" data-height-input value="4.2" required />
+            </label>
+            <label>Tipo de chute
+              <select id="quick-shot">
+                <option value="">Automático (pela trajetória)</option>
+                <option value="Reto">Reto</option>
+                <option value="Arqueado">Arqueado</option>
+              </select>
+            </label>
+            <button class="primary" type="submit">Avaliar botão</button>
+          </form>
+          <div id="quick-eval-result"></div>
+        </article>
+      </section>
+
+      <section id="perfil" class="view">
+        <h2>Perfil do jogador</h2>
+        <p class="muted">Salve seu tipo de chute preferido e as zonas de onde mais costuma finalizar.</p>
+        <article class="card field-reference-card">
+          <h3>Zonas que você mais utiliza</h3>
+          <p class="muted">Ao marcar as zonas abaixo, elas são destacadas no campo.</p>
+          <div class="real-field-visual compact" data-field-map="profile" data-alt="Campo com as zonas habituais do jogador"></div>
+        </article>
+
+        <article class="card">
+          <form id="profile-form">
+            <div class="form-grid">
+              <label>Tipo de chute preferido
+                <select id="profile-shot" required>
+                  <option value="">Selecione</option>
+                  <option value="Reto">Reto</option>
+                  <option value="Arqueado">Arqueado</option>
+                </select>
+              </label>
+            </div>
+            <fieldset>
+              <legend>Zonas habituais</legend>
+              <div id="profile-zone-checks"></div>
+            </fieldset>
+            <button class="primary" type="submit">Salvar perfil</button>
+          </form>
+        </article>
+        <article class="card">
+          <h3>Recomendações pelo perfil</h3>
+          <div id="profile-recommendations"></div>
+        </article>
+      </section>
+
+      <section id="botoes" class="view">
+        <h2>Meus botões reais</h2>
+        <p class="muted">Cadastre os botões que você realmente possui.</p>
+
+        <article class="card">
+          <h3 id="button-form-title">Novo botão</h3>
+          <form id="button-form" class="form-grid">
+            <label>Nome / número
+              <input type="text" id="button-name" placeholder="Ex.: 10 ou Botão A" maxlength="40" required />
+            </label>
+            <label>Ângulo (°)
+              <input type="number" id="button-angle" data-angle-input required />
+            </label>
+            <label>Altura (mm)
+              <input type="number" id="button-height" data-height-input required />
+            </label>
+            <div class="button-row">
+              <button class="primary" type="submit" id="button-submit">Cadastrar</button>
+              <button class="secondary" type="button" id="button-cancel" hidden>Cancelar edição</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="card">
+          <h3>Botões cadastrados</h3>
+          <div id="buttons-table"></div>
+        </article>
+
+        <article class="card field-reference-card">
+          <h3>Melhor botão real por zona</h3>
+          <div class="real-field-visual compact" data-field-map="buttons" data-alt="Campo com zona selecionada para escolha do melhor botão"></div>
+          <div id="buttons-field-legend" class="field-status" aria-live="polite">Selecione a zona abaixo.</div>
+          <div class="form-grid spaced">
+            <label>Zona
+              <select id="real-best-zone" data-zone-select></select>
+            </label>
+            <button id="real-best-btn" class="primary" type="button">Analisar meus botões</button>
+          </div>
+          <div id="real-best-result"></div>
+        </article>
+      </section>
+
+      <section id="comparador" class="view">
+        <h2>Comparador de botões</h2>
+        <p class="muted">Compare lado a lado as três zonas e veja onde cada botão ganha ou perde aderência.</p>
+        <article class="card">
+          <div id="compare-selector"></div>
+          <button id="compare-btn" class="primary" type="button">Comparar selecionados</button>
+        </article>
+        <article class="card">
+          <div id="compare-result"></div>
+        </article>
+      </section>
+
+      <section id="mapa" class="view">
+        <h2>Mapa de utilização</h2>
+        <p class="muted">Selecione um botão para colorir cada zona do campo pelo score.</p>
+        <article class="card">
+          <div class="form-grid">
+            <label>Botão
+              <select id="heatmap-button" data-button-select="required"></select>
+            </label>
+            <button id="heatmap-btn" class="primary" type="button">Gerar mapa</button>
+          </div>
+        </article>
+        <article class="card">
+          <div class="real-field-visual" data-field-map="heatmap" data-alt="Campo real com heatmap das zonas de utilização do botão"></div>
+          <div id="heatmap-result"></div>
+        </article>
+      </section>
+
+      <section id="configurador" class="view">
+        <h2>Configurador de chute</h2>
+        <p class="muted">Informe a zona e o tipo de chute. O sistema retorna as melhores configurações de botão para esse cenário.</p>
+        <article class="card field-reference-card">
+          <h3>Zona do chute</h3>
+          <div class="real-field-visual compact" data-field-map="configurator" data-alt="Campo com zona selecionada no configurador de chute"></div>
+          <div id="config-field-legend" class="field-status" aria-live="polite"></div>
+        </article>
+
+        <article class="card">
+          <form id="inverse-form" class="form-grid">
+            <label>Zona
+              <select id="inverse-zone" data-zone-select></select>
+            </label>
+            <label>Tipo de chute
+              <select id="inverse-shot">
+                <option value="Reto">Reto</option>
+                <option value="Arqueado">Arqueado</option>
+              </select>
+            </label>
+            <label>Quantidade
+              <input type="number" id="inverse-limit" min="1" max="12" value="5" />
+            </label>
+            <button class="primary" type="submit">Buscar configurações</button>
+          </form>
+          <div id="inverse-result"></div>
+        </article>
+      </section>
+
+      <section id="testes" class="view">
+        <h2>Registro de testes reais</h2>
+        <p class="muted">Registre quantas tentativas terminaram em cada resultado. O total de tentativas é a soma.</p>
+
+        <article class="card field-reference-card">
+          <h3>Distância do teste no campo</h3>
+          <div class="real-field-visual compact" data-field-map="tests" data-alt="Campo mostrando a zona correspondente à distância do teste"></div>
+          <div id="test-field-legend" class="field-status" aria-live="polite"></div>
+        </article>
+
+        <article class="card">
+          <form id="test-form">
+            <div class="form-grid">
+              <label>Botão
+                <select id="test-button" data-button-select="required"></select>
+              </label>
+              <label>Distância real (cm)
+                <input type="number" id="test-distance" step="0.1" value="27" required />
+              </label>
+              <label>Tipo executado
+                <select id="test-shot">
+                  <option value="Reto">Reto</option>
+                  <option value="Arqueado">Arqueado</option>
+                </select>
+              </label>
+            </div>
+            <fieldset>
+              <legend>Resultados</legend>
+              <div class="counts-grid" id="test-counts"></div>
+              <p class="counts-total">Total de tentativas: <output id="test-attempts-total" for="test-counts">0</output></p>
+            </fieldset>
+            <button class="primary" type="submit">Registrar teste</button>
+          </form>
+        </article>
+
+        <article class="card">
+          <h3>Histórico</h3>
+          <div id="tests-table"></div>
+        </article>
+      </section>
+
+      <section id="eficiencia" class="view">
+        <h2>Score real × teórico</h2>
+        <p class="muted">O score teórico mede a proximidade do IE-alvo; não é probabilidade de gol. Por isso, comparamos a ordem dos botões em vez de subtrair percentuais.</p>
+        <article class="card">
+          <div class="form-grid four">
+            <label>Botão
+              <select id="eff-button" data-button-select="all"></select>
+            </label>
+            <label>Zona
+              <select id="eff-zone" data-zone-select="all"></select>
+            </label>
+            <label>Tipo executado
+              <select id="eff-shot">
+                <option value="">Todos</option>
+                <option value="Reto">Reto</option>
+                <option value="Arqueado">Arqueado</option>
+              </select>
+            </label>
+            <button id="eff-btn" class="primary" type="button">Calcular</button>
+          </div>
+          <div id="eff-result"></div>
+        </article>
+      </section>
+
+      <section id="dados" class="view">
+        <h2>Backup dos dados</h2>
+        <p class="muted">Os dados ficam salvos apenas neste navegador. Exporte um backup regularmente para não perdê-los ou para levá-los a outro aparelho.</p>
+        <article class="card">
+          <h3>Exportar</h3>
+          <div class="button-row">
+            <button id="export-json" class="primary" type="button">Baixar backup (JSON)</button>
+            <button id="export-csv" class="secondary" type="button">Baixar testes (CSV)</button>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Importar</h3>
+          <p class="muted">Substitui todos os dados atuais pelos do arquivo.</p>
+          <label>Arquivo de backup (.json)
+            <input type="file" id="import-json" accept="application/json,.json" />
+          </label>
+        </article>
+        <article class="card">
+          <h3>Apagar tudo</h3>
+          <button id="clear-all" class="danger" type="button">Apagar perfil, botões e testes</button>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
