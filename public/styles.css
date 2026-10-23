@@ -182,6 +182,29 @@ th { background: #f8fafc; color: #475467; font-size: 12px; text-transform: upper
 .pill.warn { background: #fff5d8; color: #805900; }
 .pill.low { background: #fdecec; color: #9a2a20; }
 
+.zone-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.zone-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.muted.small,
+td .small {
+  display: block;
+  font-size: 0.8rem;
+}
+
+.zone-tag + .small { margin-top: 2px; }
+
 .scorebar {
   height: 9px;
   background: #edf1f5;

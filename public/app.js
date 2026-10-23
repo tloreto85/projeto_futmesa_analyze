@@ -167,6 +167,14 @@ function evaluateZone(angle, height, zone, shotType) {
   return { ...evaluate(angle, height, zone.distance, shotType), zoneId: zone.id, zoneName: zone.name, label: zone.label };
 }
 
+// Usa o chute registrado no botão; sem registro, assume o chute natural da trajetória.
+function buttonProfile(btn) {
+  const results = MODEL.zones
+    .map(z => evaluateZone(btn.angle, btn.height, z, btn.shotType || ""))
+    .sort((a, b) => b.score - a.score);
+  return { best: results[0], results, shotIsAuto: !btn.shotType };
+}
+
 function validateConfig(angle, height) {
   if (!(angle >= MODEL.angleMin && angle <= MODEL.angleMax)) {
     throw new Error(`Ângulo deve estar entre ${MODEL.angleMin}° e ${MODEL.angleMax}°.`);
@@ -284,6 +292,7 @@ function normalizeState(parsed) {
           name: String(b.name).slice(0, 40),
           angle: Number(b.angle),
           height: Number(b.height),
+          shotType: MODEL.shotTypes.includes(b.shotType) ? b.shotType : "",
           createdAt: b.createdAt || new Date().toISOString()
         }))
       : [],
@@ -563,6 +572,7 @@ function setEditingButton(btn) {
     document.getElementById("button-name").value = btn.name;
     document.getElementById("button-angle").value = btn.angle;
     document.getElementById("button-height").value = btn.height;
+    document.getElementById("button-shot").value = btn.shotType || "";
     document.getElementById("button-name").focus();
   } else {
     form.reset();
@@ -576,15 +586,24 @@ function renderButtons() {
   } else {
     host.innerHTML = `
       <div class="table-wrap"><table>
-        <thead><tr><th>Nome</th><th>Ângulo</th><th>Altura</th><th>IE</th><th>Trajetória</th><th><span class="sr-only">Ações</span></th></tr></thead>
+        <thead><tr><th>Nome</th><th>Ângulo</th><th>Altura</th><th>IE</th><th>Trajetória</th><th>Tipo de chute</th><th>Melhor zona de chute</th><th>Score</th><th><span class="sr-only">Ações</span></th></tr></thead>
         <tbody>${state.buttons.map(btn => {
-          const ie = calculateIE(btn.angle, btn.height);
+          const { best, shotIsAuto } = buttonProfile(btn);
+          const zone = zoneById(best.zoneId);
           return `<tr>
             <td>${escapeHtml(btn.name)}</td>
             <td>${fmtAngle(btn.angle)}</td>
             <td>${fmtHeight(btn.height)}</td>
-            <td>${fmt(ie, 3)}</td>
-            <td>${classifyTrajectory(ie)}</td>
+            <td>${fmt(best.ie, 3)}</td>
+            <td>${best.trajectory}</td>
+            <td>${best.shot}${shotIsAuto
+              ? ' <span class="muted small">(automático)</span>'
+              : best.shot !== naturalShot(best.trajectory)
+                ? ` <span class="pill warn">Natural: ${naturalShot(best.trajectory)}</span>`
+                : ""}</td>
+            <td><span class="zone-tag"><span class="zone-dot" style="background:rgb(${zone.rgb})" aria-hidden="true"></span>${zone.label}</span>
+              <span class="muted small">${zone.name}</span></td>
+            <td>${scoreCell(best.score)}${best.alert ? `<span class="pill low">${best.alert}</span>` : ""}</td>
             <td class="actions">
               <button class="secondary" type="button" data-edit-button="${escapeHtml(btn.id)}">Editar</button>
               <button class="danger" type="button" data-delete-button="${escapeHtml(btn.id)}">Remover</button>
@@ -626,6 +645,7 @@ document.getElementById("button-form").addEventListener("submit", e => {
   const name = document.getElementById("button-name").value.trim();
   const angle = Number(document.getElementById("button-angle").value);
   const height = Number(document.getElementById("button-height").value);
+  const shotType = document.getElementById("button-shot").value;
   try {
     if (!name) throw new Error("Informe um nome.");
     const duplicate = state.buttons.some(b => b.id !== editingButtonId && b.name.toLowerCase() === name.toLowerCase());
@@ -633,11 +653,11 @@ document.getElementById("button-form").addEventListener("submit", e => {
     validateConfig(angle, height);
     if (editingButtonId) {
       const btn = state.buttons.find(b => b.id === editingButtonId);
-      Object.assign(btn, { name, angle, height });
+      Object.assign(btn, { name, angle, height, shotType });
       state.tests.forEach(t => { if (t.buttonId === btn.id) t.buttonName = name; });
       toast("Botão atualizado. Testes antigos mantêm a configuração da época.");
     } else {
-      state.buttons.push({ id: uid(), name, angle, height, createdAt: new Date().toISOString() });
+      state.buttons.push({ id: uid(), name, angle, height, shotType, createdAt: new Date().toISOString() });
       toast("Botão cadastrado.");
     }
     saveState();
