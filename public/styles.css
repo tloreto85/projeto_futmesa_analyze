@@ -38,6 +38,26 @@ button, input, select { font: inherit; }
   border-radius: 999px;
   font-size: 12px;
 }
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.download-zip-btn {
+  background: white;
+  color: #0e2a47;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.download-zip-btn:hover { background: #e6eef8; }
+.download-zip-btn:focus-visible { outline: 2px solid white; outline-offset: 2px; }
+.download-zip-btn:disabled { opacity: .7; cursor: wait; }
 
 .app-shell {
   display: grid;
@@ -181,6 +201,29 @@ th { background: #f8fafc; color: #475467; font-size: 12px; text-transform: upper
 .pill.good { background: #e8f7ef; color: #17613a; }
 .pill.warn { background: #fff5d8; color: #805900; }
 .pill.low { background: #fdecec; color: #9a2a20; }
+
+.zone-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.zone-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.muted.small,
+td .small {
+  display: block;
+  font-size: 0.8rem;
+}
+
+.zone-tag + .small { margin-top: 2px; }
 
 .scorebar {
   height: 9px;
